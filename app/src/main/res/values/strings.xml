@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">TabLayoutTest</string>
+    <string name="nav_home">首页</string>
+    <string name="nav_bookmarks">收藏</string>
+    <string name="nav_about">关于</string>
+    <string name="nav_settings">设置</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+</resources>
