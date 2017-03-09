@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -61,6 +62,12 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         BDImage image = mList.get(position);
+        ViewGroup.LayoutParams params;
+        params = holder.imageView.getLayoutParams();
+        params.width = image.getImageWidth();
+        params.height = image.getImageHeight();
+        holder.imageView.setLayoutParams(params);
+
         Glide.with(context).load(image.getImageUrl())
                 .placeholder(R.drawable.nav_header_image)
                 .override(image.getImageWidth(),image.getImageHeight())

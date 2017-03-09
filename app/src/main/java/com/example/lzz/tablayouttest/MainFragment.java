@@ -2,10 +2,10 @@ package com.example.lzz.tablayouttest;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,13 +22,13 @@ public class MainFragment extends Fragment {
 
     private Context context;
     private MainPagerAdapter adapter;
-
     private TabLayout tabLayout;
     private FloatingActionButton fab;
 
     private AnimationFragment animationFragment;
     private SceneryFragment sceneryFragment;
     private GirlsFragment girlsFragment;
+    private FragmentPresenter presenter;
 
     public static MainFragment newInstance(){
         return new MainFragment();
@@ -37,15 +37,19 @@ public class MainFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (animationFragment == null){
+        this.context = getActivity();
+        if (savedInstanceState != null){
+            FragmentManager manager = getChildFragmentManager();
+            animationFragment = (AnimationFragment)manager.getFragment(savedInstanceState, "animation");
+            sceneryFragment = (SceneryFragment)manager.getFragment(savedInstanceState, "scenery");
+            girlsFragment = (GirlsFragment)manager.getFragment(savedInstanceState, "girls");
+        }else {
             animationFragment = AnimationFragment.newInstance();
-        }
-        if (sceneryFragment == null){
             sceneryFragment = SceneryFragment.newInstance();
-        }
-        if (girlsFragment == null){
             girlsFragment = GirlsFragment.newInstance();
         }
+
+        presenter = new FragmentPresenter(context, animationFragment, sceneryFragment, girlsFragment);
     }
 
     @Override
@@ -68,5 +72,14 @@ public class MainFragment extends Fragment {
             }
         });
         return view;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        FragmentManager manager = getChildFragmentManager();
+        manager.putFragment(outState, "animation", animationFragment);
+        manager.putFragment(outState, "scenery", sceneryFragment);
+        manager.putFragment(outState, "girls", girlsFragment);
     }
 }

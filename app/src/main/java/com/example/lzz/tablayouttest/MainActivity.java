@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
         navigationView = (NavigationView)findViewById(R.id.nav_view);
         toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        ActionBar actionBar = getSupportActionBar();
+//        ActionBar actionBar = getSupportActionBar();
 //        if (actionBar != null){
 //            actionBar.setDisplayHomeAsUpEnabled(true);
 //            actionBar.setHomeAsUpIndicator(R.drawable.ic_dehaze_white_24dp);

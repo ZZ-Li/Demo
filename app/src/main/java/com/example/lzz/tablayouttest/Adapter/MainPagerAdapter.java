@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import com.example.lzz.tablayouttest.AnimationFragment;
+import com.example.lzz.tablayouttest.FragmentPresenter;
 import com.example.lzz.tablayouttest.GirlsFragment;
 import com.example.lzz.tablayouttest.SceneryFragment;
 
@@ -20,6 +21,7 @@ public class MainPagerAdapter extends FragmentPagerAdapter{
     private AnimationFragment animationFragment;
     private SceneryFragment sceneryFragment;
     private GirlsFragment girlsFragment;
+    private FragmentPresenter presenter;
 
     public MainPagerAdapter(FragmentManager fm, Context context,
                             AnimationFragment animationFragment,
@@ -38,8 +40,9 @@ public class MainPagerAdapter extends FragmentPagerAdapter{
             return sceneryFragment;
         }else if (position == 2){
             return girlsFragment;
+        }else {
+            return animationFragment;
         }
-        return animationFragment;
     }
 
     @Override
