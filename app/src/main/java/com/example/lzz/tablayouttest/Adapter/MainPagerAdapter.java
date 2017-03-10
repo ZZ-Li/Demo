@@ -21,7 +21,6 @@ public class MainPagerAdapter extends FragmentPagerAdapter{
     private AnimationFragment animationFragment;
     private SceneryFragment sceneryFragment;
     private GirlsFragment girlsFragment;
-    private FragmentPresenter presenter;
 
     public MainPagerAdapter(FragmentManager fm, Context context,
                             AnimationFragment animationFragment,

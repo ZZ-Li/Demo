@@ -13,8 +13,6 @@ import java.util.List;
 
 public interface FragmentInterface {
 
-    void setPresenter(FragmentPresenter presenter);
-
     void showError();
 
     void showLoading();

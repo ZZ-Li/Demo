@@ -1,6 +1,9 @@
 package com.example.lzz.tablayouttest.Adapter;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,7 +15,9 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.example.lzz.tablayouttest.R;
+import com.example.lzz.tablayouttest.ShowImageActivity;
 import com.example.lzz.tablayouttest.db.BDImage;
 
 import java.util.List;
@@ -53,7 +58,9 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
             public void onClick(View v) {
                 int position = holder.getAdapterPosition();
                 BDImage image = mList.get(position);
-                Toast.makeText(v.getContext(), image.getImageTitle(), Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(context, ShowImageActivity.class);
+                intent.putExtra("imageUrl", image.getImageUrl());
+                context.startActivity(intent);
             }
         });
         return holder;
@@ -62,16 +69,16 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         BDImage image = mList.get(position);
-        ViewGroup.LayoutParams params;
-        params = holder.imageView.getLayoutParams();
+        ViewGroup.LayoutParams params = holder.imageView.getLayoutParams();
         params.width = image.getImageWidth();
         params.height = image.getImageHeight();
         holder.imageView.setLayoutParams(params);
-
         Glide.with(context).load(image.getImageUrl())
-                .placeholder(R.drawable.nav_header_image)
-                .override(image.getImageWidth(),image.getImageHeight())
+                //.asBitmap()
                 .error(R.drawable.nav_header_image)
+                //.override(image.getImageWidth(), image.getImageHeight())
+                //.centerCrop()
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .into(holder.imageView);
     }
 
@@ -79,4 +86,5 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
     public int getItemCount() {
         return mList.size();
     }
+
 }

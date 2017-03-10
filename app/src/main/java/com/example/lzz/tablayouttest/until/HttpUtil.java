@@ -26,6 +26,7 @@ public class HttpUtil {
         client.newCall(request).enqueue(callback);
     }
 
+    // 这种方法需要手动开启线程
     public static List<BDImage> sendOKHttpRequestTest(String address){
         List<BDImage> imageList = new ArrayList<>();
         try {

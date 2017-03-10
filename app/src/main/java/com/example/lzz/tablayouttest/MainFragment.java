@@ -7,6 +7,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +29,6 @@ public class MainFragment extends Fragment {
     private AnimationFragment animationFragment;
     private SceneryFragment sceneryFragment;
     private GirlsFragment girlsFragment;
-    private FragmentPresenter presenter;
 
     public static MainFragment newInstance(){
         return new MainFragment();
@@ -48,8 +48,6 @@ public class MainFragment extends Fragment {
             sceneryFragment = SceneryFragment.newInstance();
             girlsFragment = GirlsFragment.newInstance();
         }
-
-        presenter = new FragmentPresenter(context, animationFragment, sceneryFragment, girlsFragment);
     }
 
     @Override
@@ -57,12 +55,16 @@ public class MainFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         tabLayout = (TabLayout) view.findViewById(R.id.tab_layout);
         fab = (FloatingActionButton)view.findViewById(R.id.fab);
+
         ViewPager viewPager = (ViewPager) view.findViewById(R.id.view_pager);
+        viewPager.setOffscreenPageLimit(3);
         adapter = new MainPagerAdapter(getChildFragmentManager(), getActivity(),
                 animationFragment,
                 sceneryFragment,
                 girlsFragment);
         viewPager.setAdapter(adapter);
+        Log.d("MainFragment", "" + viewPager.getCurrentItem());
+
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.setTabMode(TabLayout.MODE_FIXED);
         fab.setOnClickListener(new View.OnClickListener() {

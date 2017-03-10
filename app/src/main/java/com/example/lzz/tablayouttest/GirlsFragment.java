@@ -1,6 +1,8 @@
 package com.example.lzz.tablayouttest;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
@@ -31,7 +33,7 @@ import okhttp3.Response;
 
 public class GirlsFragment extends Fragment{
 
-    private List<BDImage> list;
+    private List<BDImage> imageList = new ArrayList<>();
     private RecyclerView recyclerView;
     private SwipeRefreshLayout swipeRefresh;
     private ImageAdapter adapter;
@@ -61,12 +63,20 @@ public class GirlsFragment extends Fragment{
                 requestImageData();
             }
         });
-        requestImageData();
-        recyclerView.setAdapter(adapter);
+
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String imageString = pref.getString("girlsImage", null);
+        if (imageString != null){
+            showImageInfo(imageString);
+        }else {
+            requestImageData();
+        }
+        showImageInfo(imageString);
         return view;
     }
 
     private void requestImageData(){
+        swipeRefresh.setRefreshing(true);
         HttpUtil.sendOKHttpRequest(API.girlsImageUrl, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -82,27 +92,38 @@ public class GirlsFragment extends Fragment{
 
             @Override
             public void onResponse(Call call,final Response response) throws IOException {
-                list = Utility.handleImageResponse(response.body().string());
+                final String imageResponse = response.body().string();
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        swipeRefresh.setRefreshing(true);
-                        if (list != null){
-                            if (adapter == null){
-                                adapter = new ImageAdapter(list);
-                                recyclerView.setAdapter(adapter);
-                                swipeRefresh.setRefreshing(false);
-                            }else {
-                                adapter.notifyDataSetChanged();
-                                swipeRefresh.setRefreshing(false);
-                            }
-                        }else {
-                            swipeRefresh.setRefreshing(false);
-                            Toast.makeText(getActivity(), "加载图片失败", Toast.LENGTH_SHORT).show();
-                        }
+                        SharedPreferences.Editor editor = PreferenceManager
+                                .getDefaultSharedPreferences(getActivity()).edit();
+                        editor.putString("girlsImage", imageResponse);
+                        editor.apply();
+                        showImageInfo(imageResponse);
                     }
                 });
             }
         });
+    }
+
+    private void showImageInfo(String imageData){
+        List<BDImage> list = Utility.handleImageResponse(imageData, getActivity());
+        if (list != null){
+            imageList.clear();
+            for (BDImage image : list){
+                imageList.add(image);
+            }
+            if (adapter == null){
+                adapter = new ImageAdapter(imageList);
+                recyclerView.setAdapter(adapter);
+            }else {
+                adapter.notifyDataSetChanged();
+            }
+            swipeRefresh.setRefreshing(false);
+        }else {
+            swipeRefresh.setRefreshing(false);
+            Toast.makeText(getActivity(), "加载图片失败", Toast.LENGTH_SHORT).show();
+        }
     }
 }

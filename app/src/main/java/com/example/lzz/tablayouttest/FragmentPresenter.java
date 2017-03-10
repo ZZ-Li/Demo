@@ -2,6 +2,8 @@ package com.example.lzz.tablayouttest;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 
 import com.example.lzz.tablayouttest.Interface.PresenterInterface;
@@ -33,6 +35,11 @@ public class FragmentPresenter implements PresenterInterface{
 
     }
 
+    public FragmentPresenter(Context context, AnimationFragment animationFragment){
+        this.context = context;
+        this.animationFragment = animationFragment;
+    }
+
     public FragmentPresenter(Context context,
                              AnimationFragment animationFragment,
                              SceneryFragment sceneryFragment,
@@ -46,17 +53,22 @@ public class FragmentPresenter implements PresenterInterface{
 
     @Override
     public void start() {
-        animationFragment.setPresenter(this);
-        animationFragment.showLoading();
-        requestImageData();
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+        String imageString = pref.getString("animationImage", null);
+        if (imageString != null){
+            showImageInfo(imageString);
+        }else {
+            requestImageData();
+        }
     }
 
     @Override
     public void refresh() {
-        start();
+        requestImageData();
     }
 
     private void requestImageData() {
+        animationFragment.showLoading();
         HttpUtil.sendOKHttpRequest(API.animationImageUrl, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -70,22 +82,30 @@ public class FragmentPresenter implements PresenterInterface{
             }
 
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
+            public void onResponse(final Call call, Response response) throws IOException {
                 final String imageResponse = response.body().string();
                 ((Activity)context).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        list = Utility.handleImageResponse(imageResponse);
-                        if (list != null){
-                            animationFragment.showResults(list);
-                            animationFragment.stopLoading();
-                        }else {
-                            animationFragment.showError();
-                        }
+                        SharedPreferences.Editor editor = PreferenceManager
+                                .getDefaultSharedPreferences(context).edit();
+                        editor.putString("animationImage", imageResponse);
+                        editor.apply();
+                        showImageInfo(imageResponse);
                     }
                 });
-
             }
+
         });
+    }
+
+    private void showImageInfo(String imageData){
+        list = Utility.handleImageResponse(imageData, context);
+        if (list != null){
+            animationFragment.showResults(list);
+            animationFragment.stopLoading();
+        }else {
+            animationFragment.showError();
+        }
     }
 }
