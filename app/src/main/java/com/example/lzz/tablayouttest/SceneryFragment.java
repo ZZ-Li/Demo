@@ -121,10 +121,10 @@ public class SceneryFragment extends Fragment{
             }else {
                 adapter.notifyDataSetChanged();
             }
-            swipeRefresh.setRefreshing(false);
         }else {
-            swipeRefresh.setRefreshing(false);
+
             Toast.makeText(getActivity(), "加载图片失败", Toast.LENGTH_SHORT).show();
         }
+        swipeRefresh.setRefreshing(false);
     }
 }
