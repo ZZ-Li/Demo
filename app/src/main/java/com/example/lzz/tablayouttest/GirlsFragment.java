@@ -45,7 +45,7 @@ public class GirlsFragment extends Fragment{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("GirlsFragment","onCreate");
+        Log.d("GirlsFragment","onCreate" + getActivity().toString());
     }
 
     @Override

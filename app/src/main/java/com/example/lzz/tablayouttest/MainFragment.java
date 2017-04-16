@@ -63,7 +63,7 @@ public class MainFragment extends Fragment {
                 sceneryFragment,
                 girlsFragment);
         viewPager.setAdapter(adapter);
-        Log.d("MainFragment", "" + viewPager.getCurrentItem());
+        //Log.d("MainFragment", "" + viewPager.getCurrentItem());
 
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.setTabMode(TabLayout.MODE_FIXED);
@@ -71,6 +71,7 @@ public class MainFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Toast.makeText(getActivity(), "...", Toast.LENGTH_SHORT).show();
+
             }
         });
         return view;
