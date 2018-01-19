@@ -1,5 +1,6 @@
 package com.example.lzz.tablayouttest;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -50,6 +51,37 @@ public class AnimationFragment extends Fragment implements FragmentInterface{
         StaggeredGridLayoutManager layoutManager = new
                 StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            boolean isSlidingToLast = false;
+
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                StaggeredGridLayoutManager layoutManager = (StaggeredGridLayoutManager)recyclerView.getLayoutManager();
+                if (newState == RecyclerView.SCROLL_STATE_IDLE){
+                    int totalItemCount = layoutManager.getItemCount();
+                    int[] lastPositions = layoutManager.findLastCompletelyVisibleItemPositions(
+                            new int[layoutManager.getSpanCount()]);
+                    int max = lastPositions[0];
+                    for (int value : lastPositions) {
+                        if (value > max) {
+                            max = value;
+                        }
+                    }
+                    int lastVisibleItem = max;
+                    if (lastVisibleItem >= totalItemCount - 1 && isSlidingToLast){
+                        //getLoadMoreImage();
+                        presenter.loadMore();
+                    }
+                }
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                isSlidingToLast = dy > 0;
+            }
+        });
 
         swipeRefresh = (SwipeRefreshLayout)view.findViewById(R.id.swipe_refresh);
         swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
@@ -104,6 +136,19 @@ public class AnimationFragment extends Fragment implements FragmentInterface{
         }
         if (adapter == null) {
             adapter = new ImageAdapter(imageList);
+            adapter.setImageItemOnClickListener(new ImageAdapter.ImageItemClickListener() {
+                @Override
+                public void imageItemOnClick(String imageUrl) {
+                    Intent intent = new Intent(getActivity(), ShowImageActivity.class);
+                    intent.putExtra("imageUrl", imageUrl);
+                    ArrayList<String> urlList = new ArrayList<String>();
+                    for (BDImage image : imageList){
+                        urlList.add(image.getImageUrl());
+                    }
+                    intent.putStringArrayListExtra("urlList", urlList);
+                    startActivity(intent);
+                }
+            });
             recyclerView.setAdapter(adapter);
         }else {
             Log.d("AnimationFragment","adapter.notifyDataSetChanged");

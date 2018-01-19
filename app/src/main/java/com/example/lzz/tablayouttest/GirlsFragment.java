@@ -1,5 +1,6 @@
 package com.example.lzz.tablayouttest;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -116,6 +117,19 @@ public class GirlsFragment extends Fragment{
             }
             if (adapter == null){
                 adapter = new ImageAdapter(imageList);
+                adapter.setImageItemOnClickListener(new ImageAdapter.ImageItemClickListener() {
+                    @Override
+                    public void imageItemOnClick(String imageUrl) {
+                        Intent intent = new Intent(getActivity(), ShowImageActivity.class);
+                        intent.putExtra("imageUrl", imageUrl);
+                        ArrayList<String> urlList = new ArrayList<String>();
+                        for (BDImage image : imageList){
+                            urlList.add(image.getImageUrl());
+                        }
+                        intent.putStringArrayListExtra("urlList", urlList);
+                        startActivity(intent);
+                    }
+                });
                 recyclerView.setAdapter(adapter);
             }else {
                 adapter.notifyDataSetChanged();

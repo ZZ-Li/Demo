@@ -1,5 +1,6 @@
 package com.example.lzz.tablayouttest;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -56,6 +57,36 @@ public class SceneryFragment extends Fragment{
         StaggeredGridLayoutManager layoutManager = new
                 StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            boolean isSlidingToLast = false;
+
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                StaggeredGridLayoutManager layoutManager = (StaggeredGridLayoutManager)recyclerView.getLayoutManager();
+                if (newState == RecyclerView.SCROLL_STATE_IDLE){
+                    int totalItemCount = layoutManager.getItemCount();
+                    int[] lastPositions = layoutManager.findLastCompletelyVisibleItemPositions(
+                            new int[layoutManager.getSpanCount()]);
+                    int max = lastPositions[0];
+                    for (int value : lastPositions) {
+                        if (value > max) {
+                            max = value;
+                        }
+                    }
+                    int lastVisibleItem = max;
+                    if (lastVisibleItem >= totalItemCount - 1 && isSlidingToLast){
+                        loadMoreImage();
+                    }
+                }
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                isSlidingToLast = dy > 0;
+            }
+        });
         swipeRefresh = (SwipeRefreshLayout)view.findViewById(R.id.swipe_refresh);
         swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -117,14 +148,59 @@ public class SceneryFragment extends Fragment{
             }
             if (adapter == null){
                 adapter = new ImageAdapter(imageList);
+                adapter.setImageItemOnClickListener(new ImageAdapter.ImageItemClickListener() {
+                    @Override
+                    public void imageItemOnClick(String imageUrl) {
+                        Intent intent = new Intent(getActivity(), ShowImageActivity.class);
+                        intent.putExtra("imageUrl", imageUrl);
+                        ArrayList<String> urlList = new ArrayList<String>();
+                        for (BDImage image : imageList){
+                            urlList.add(image.getImageUrl());
+                        }
+                        intent.putStringArrayListExtra("urlList", urlList);
+                        startActivity(intent);
+                    }
+                });
                 recyclerView.setAdapter(adapter);
             }else {
                 adapter.notifyDataSetChanged();
             }
         }else {
-
             Toast.makeText(getActivity(), "加载图片失败", Toast.LENGTH_SHORT).show();
         }
         swipeRefresh.setRefreshing(false);
+    }
+
+    private void loadMoreImage(){
+        HttpUtil.sendOKHttpRequest(API.sceneryImageUrl, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getActivity(), "加载图片失败", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String stringResponse = response.body().string();
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        List<BDImage> list = Utility.handleImageResponse(stringResponse, getActivity());
+                        if (list != null){
+                            for (BDImage image : list){
+                                imageList.add(image);
+                            }
+                            adapter.notifyDataSetChanged();
+                        }else {
+                            Toast.makeText(getActivity(), "加载图片失败", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+        });
     }
 }

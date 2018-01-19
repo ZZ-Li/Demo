@@ -13,4 +13,6 @@ public interface PresenterInterface {
     void start();
 
     void refresh();
+
+    void loadMore();
 }

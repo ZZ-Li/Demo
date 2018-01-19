@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.widget.Toast;
 
 import com.example.lzz.tablayouttest.Interface.PresenterInterface;
 import com.example.lzz.tablayouttest.db.BDImage;
@@ -108,4 +109,40 @@ public class FragmentPresenter implements PresenterInterface{
             animationFragment.showError();
         }
     }
+
+    @Override
+    public void loadMore() {
+        HttpUtil.sendOKHttpRequest(API.sceneryImageUrl, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                ((Activity)context).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(context, "加载图片失败", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String stringResponse = response.body().string();
+                ((Activity)context).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        List<BDImage> list = Utility.handleImageResponse(stringResponse, context);
+                        if (list != null){
+//                            for (BDImage image : list){
+//                                imageList.add(image);
+//                            }
+//                            adapter.notifyDataSetChanged();
+                        }else {
+                            Toast.makeText(context, "加载图片失败", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+
+        });
+    }
+
 }

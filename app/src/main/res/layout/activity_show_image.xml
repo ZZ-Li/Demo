@@ -7,17 +7,40 @@
     android:background="#333"
     tools:context="com.example.lzz.tablayouttest.ShowImageActivity">
 
-
-    <RelativeLayout
-        android:id="@+id/relativeLayout"
+    <android.support.v4.view.ViewPager
+        android:id="@+id/image_viewpager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center">
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"/>
+
+    <LinearLayout
+        android:id="@+id/download_layout"
+        android:orientation="vertical"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginBottom="50dp"
+        android:layout_marginEnd="16dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:gravity="center"
+        android:background="@drawable/download_background">
         <ImageView
-            android:id="@+id/show_image"
-            android:layout_width="match_parent"
+            android:id="@+id/download_image"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"/>
-    </RelativeLayout>
+            android:src="@drawable/download"/>
+    </LinearLayout>
+
+    <!--<RelativeLayout-->
+        <!--android:id="@+id/relativeLayout"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:gravity="center">-->
+        <!--<ImageView-->
+            <!--android:id="@+id/show_image"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_gravity="center"/>-->
+    <!--</RelativeLayout>-->
 
 </RelativeLayout>
